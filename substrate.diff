@@ -1,0 +1,70 @@
+diff --git a/frame/support/src/debug.rs b/frame/support/src/debug.rs
+index 2e64b67c1..c30149af2 100644
+--- a/frame/support/src/debug.rs
++++ b/frame/support/src/debug.rs
+@@ -128,12 +128,12 @@ pub mod native {
+ /// ```
+ #[macro_export]
+ macro_rules! runtime_print {
+-	($($arg:tt)+) => {
++	($($arg:tt)+) => {{
+ 		use core::fmt::Write;
+ 		let mut w = $crate::debug::Writer::default();
+ 		let _ = core::write!(&mut w, $($arg)+);
+ 		w.print();
+-	}
++	}}
+ }
+ 
+ /// Print out the debuggable type.
+diff --git a/primitives/api/proc-macro/Cargo.toml b/primitives/api/proc-macro/Cargo.toml
+index 122c889ad..b262903ae 100644
+--- a/primitives/api/proc-macro/Cargo.toml
++++ b/primitives/api/proc-macro/Cargo.toml
+@@ -11,7 +11,7 @@ proc-macro = true
+ quote = "1.0.2"
+ syn = { version = "1.0.8", features = ["full", "fold", "extra-traits", "visit"] }
+ proc-macro2 = "1.0.6"
+-blake2-rfc = "0.2.18"
++blake2-rfc = { version = "0.2.18", default-features = false }
+ proc-macro-crate = "0.1.4"
+ 
+ # Required for the doc tests
+diff --git a/primitives/core/Cargo.toml b/primitives/core/Cargo.toml
+index 8242ff804..030350dc7 100644
+--- a/primitives/core/Cargo.toml
++++ b/primitives/core/Cargo.toml
+@@ -28,7 +28,7 @@ parking_lot = { version = "0.9.0", optional = true }
+ sp-debug-derive = { version = "2.0.0", path = "../debug-derive" }
+ sp-externalities = { version = "2.0.0", optional = true, path = "../externalities" }
+ sp-storage = { version = "2.0.0", default-features = false, path = "../storage" }
+-libsecp256k1 = { version = "0.3.2", default-features = false }
++libsecp256k1 = { version = "<0.3.5", default-features = false }
+ 
+ # full crypto
+ ed25519-dalek = { version = "1.0.0-pre.3", default-features = false, features = ["u64_backend", "alloc"], optional = true }
+diff --git a/primitives/finality-grandpa/Cargo.toml b/primitives/finality-grandpa/Cargo.toml
+index c2856e524..e203362f1 100644
+--- a/primitives/finality-grandpa/Cargo.toml
++++ b/primitives/finality-grandpa/Cargo.toml
+@@ -22,3 +22,6 @@ std = [
+ 	"sp-api/std",
+ 	"sp-runtime/std",
+ ]
++full_crypto = [
++	"app-crypto/full_crypto"
++]
+\ No newline at end of file
+diff --git a/primitives/finality-grandpa/src/lib.rs b/primitives/finality-grandpa/src/lib.rs
+index ef61092b9..89f4c521c 100644
+--- a/primitives/finality-grandpa/src/lib.rs
++++ b/primitives/finality-grandpa/src/lib.rs
+@@ -34,7 +34,7 @@ mod app {
+ }
+ 
+ /// The grandpa crypto scheme defined via the keypair type.
+-#[cfg(feature = "std")]
++#[cfg(any(feature = "std", feature = "full_crypto"))]
+ pub type AuthorityPair = app::Pair;
+ 
+ /// Identity of a Grandpa authority.
