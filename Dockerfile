@@ -5,7 +5,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # ====== upgrade apt-get =======
 RUN apt-get update && \
-    apt-get install -y git lsb-core software-properties-common  build-essential xz-utils ocaml ocamlbuild automake autoconf libtool wget python libssl-dev libcurl4-openssl-dev protobuf-compiler libprotobuf-dev sudo kmod vim curl git-core libprotobuf-c0-dev libboost-thread-dev libboost-system-dev liblog4cpp5-dev libjsoncpp-dev alien uuid-dev libxml2-dev cmake pkg-config expect systemd-sysv gdb && \
+    apt-get install -y git lsb-core software-properties-common  build-essential xz-utils ocaml ocamlbuild automake autoconf libtool wget python libssl-dev libcurl4-openssl-dev protobuf-compiler libprotobuf-dev sudo kmod vim curl git-core libprotobuf-c0-dev libboost-thread-dev libboost-system-dev liblog4cpp5-dev libjsoncpp-dev alien uuid-dev libxml2-dev cmake pkg-config expect systemd-sysv gdb \
+        nginx && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/cache/apt/archives/*
 
@@ -79,4 +80,5 @@ RUN cd phala-pruntime && git submodule update --init && SGX_MODE=SW make
 
 # ======= start phala =======
 COPY startup.sh .
+COPY apis.conf /etc/nginx/sites-enabled/default
 CMD sh ./startup.sh
