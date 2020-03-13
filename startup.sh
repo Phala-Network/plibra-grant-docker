@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-nginx -s reload
+nginx
 
 echo "-----------start blockchain----------"
 cd /root/phala-blockchain/node && bash ./scripts/console.sh purge
