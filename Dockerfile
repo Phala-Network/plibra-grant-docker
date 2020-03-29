@@ -69,7 +69,7 @@ RUN echo "*********build phost**********"
 RUN cd phala-blockchain/phost && sh ./scripts/console.sh build --release 
 
 RUN echo "*********build pruntime**********"
-RUN cd phala-pruntime && git submodule update --init && SGX_MODE=SW make &&
+RUN cd phala-pruntime && git submodule update --init && SGX_MODE=SW make
 
 # ====== clean up ======
 
