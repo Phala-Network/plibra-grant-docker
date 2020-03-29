@@ -3,20 +3,20 @@ MAINTAINER Xinran Chen
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# ====== upgrade apt-get =======
+# ====== upgrade apt-get ======
 RUN apt-get update && \
     apt-get install -y git lsb-core software-properties-common  build-essential xz-utils ocaml ocamlbuild automake autoconf libtool wget python libssl-dev libcurl4-openssl-dev protobuf-compiler libprotobuf-dev sudo kmod vim curl git-core libprotobuf-c0-dev libboost-thread-dev libboost-system-dev liblog4cpp5-dev libjsoncpp-dev alien uuid-dev libxml2-dev cmake pkg-config expect systemd-sysv gdb \
         nginx
 
 WORKDIR /root
 
-# ====== install Rust =======
+# ====== install Rust ======
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && \
 	export PATH="$PATH:$HOME/.cargo/bin" && \
 	rustup toolchain install nightly && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly
 
-# ====== install sgx-sdk =========
+# ====== install sgx-sdk ======
 
 ENV sdk_bin https://download.01.org/intel-sgx/sgx-linux/2.7.1/distro/ubuntu18.04-server/sgx_linux_x64_sdk_2.7.101.3.bin
 ENV psw_deb https://download.01.org/intel-sgx/sgx-linux/2.7.1/distro/ubuntu18.04-server/libsgx-enclave-common_2.7.101.3-bionic1_amd64.deb
@@ -45,18 +45,18 @@ ENV PATH /root/.cargo/bin:$PATH:$SGX_SDK/bin:$SGX_SDK/bin/x64
 ENV PKG_CONFIG_PATH $PKG_CONFIG_PATH:$SGX_SDK/pkgconfig
 ENV  LD_LIBRARY_PATH $SGX_SDK/sdk_libs
 
-# ========== install llvm-9 ============
+# ====== install llvm-9 ======
 RUN wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh 9
 
-# ========== clean up ============
+# ====== clean up ======
 RUN rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/cache/apt/archives/*
 
-# ===== download Phala ======
+# ====== download Phala ======
 RUN git clone https://github.com/Phala-Network/phala-pruntime.git && \
     git clone https://github.com/Phala-Network/phala-blockchain.git
 
-# ========= build phala =========
+# ====== build phala ======
 
 RUN echo "*********build blockchain********"
 RUN cd phala-blockchain && git submodule update --init
@@ -71,12 +71,12 @@ RUN cd phala-blockchain/phost && sh ./scripts/console.sh build --release
 RUN echo "*********build pruntime**********"
 RUN cd phala-pruntime && git submodule update --init && SGX_MODE=SW make &&
 
-# ==== clean up ====
+# ====== clean up ======
 
 COPY ./cleanup.sh .
 RUN bash cleanup.sh
 
-# ======= start phala =======
+# ====== start phala ======
 COPY startup.sh .
 COPY apis.conf /etc/nginx/sites-enabled/default
 CMD sh ./startup.sh
